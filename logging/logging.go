@@ -7,6 +7,45 @@ import (
 	"time"
 )
 
+type LogLevel int
+
+const (
+	ERROR LogLevel = iota
+	WARN
+	INFO
+	DEBUG
+)
+
+var LogLevelNames = map[LogLevel]string{
+	ERROR: "ERROR",
+	WARN:  "WARN",
+	INFO:  "INFO",
+	DEBUG: "DEBUG",
+}
+
+var currentLogLevel = INFO
+
+func SetLogLevel() {
+	lvl := os.Getenv("LOG_LEVEL")
+	if lvl == "" {
+		currentLogLevel = INFO
+		return
+	}
+
+	switch lvl {
+	case "ERROR":
+		currentLogLevel = ERROR
+	case "WARN":
+		currentLogLevel = WARN
+	case "INFO":
+		currentLogLevel = INFO
+	case "DEBUG":
+		currentLogLevel = DEBUG
+	default:
+		currentLogLevel = INFO // Default to INFO if invalid level
+	}
+}
+
 // Genel uygulama logları için logger
 var AppLogger *log.Logger
 
