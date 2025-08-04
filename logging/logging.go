@@ -30,6 +30,7 @@ var LogLevelNames = map[LogLevel]string{
 
 var currentLogLevel LogLevel
 
+// SetLogLevel fonksiyonu, ortam değişkeninden log seviyesini ayarlar
 func SetLogLevel() {
 	lvl := os.Getenv("LOG_LEVEL")
 	if lvl == "" {
@@ -110,7 +111,7 @@ func LogAudit(user, endpoint, method string, statusCode int, clientIP string, pa
 
 	jsonEntry, err := json.Marshal(auditLog)
 	if err != nil {
-		AppLogger.Printf("Audit log oluşturulamadı: %v", err)
+		LogApp(ERROR, "Audit log oluşturulamadı: %v", err)
 		return
 	}
 
