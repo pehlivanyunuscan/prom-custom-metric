@@ -2,18 +2,23 @@ package logging
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"time"
 )
 
+// LogLevel tanımları
+// Log seviyeleri: ERROR, WARN, INFO, DEBUG
+// INFO varsayılan seviye olarak ayarlanır
+// DEBUG seviyesi daha ayrıntılı loglar için kullanılabilir
 type LogLevel int
 
 const (
-	ERROR LogLevel = iota
-	WARN
-	INFO
-	DEBUG
+	ERROR LogLevel = iota // 0
+	WARN                  // 1
+	INFO                  // 2
+	DEBUG                 // 3
 )
 
 var LogLevelNames = map[LogLevel]string{
@@ -23,7 +28,7 @@ var LogLevelNames = map[LogLevel]string{
 	DEBUG: "DEBUG",
 }
 
-var currentLogLevel = INFO
+var currentLogLevel LogLevel
 
 func SetLogLevel() {
 	lvl := os.Getenv("LOG_LEVEL")
@@ -53,6 +58,8 @@ var AppLogger *log.Logger
 var AuditLogger *log.Logger
 
 func init() {
+	SetLogLevel() // Log seviyesini ayarla
+
 	// Uygulama log dosyası
 	appLogFile, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
@@ -66,6 +73,15 @@ func init() {
 		log.Fatalf("Audit log dosyası açılamadı: %v", err)
 	}
 	AuditLogger = log.New(auditLogFile, "AUDIT: ", log.Ldate|log.Ltime|log.Lshortfile)
+}
+
+// LogApp genel uygulama logları için fonksiyon
+// Log seviyesine göre log yazılır
+// Örnek: LogApp(INFO, "Uygulama başlatıldı")
+func LogApp(level LogLevel, format string, v ...interface{}) {
+	if level <= currentLogLevel { // Sadece geçerli log seviyesindeki loglar yazılır
+		AppLogger.Printf("[%s] %s", LogLevelNames[level], fmt.Sprintf(format, v...))
+	}
 }
 
 // Audit log için struct

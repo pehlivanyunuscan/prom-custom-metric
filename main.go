@@ -47,7 +47,7 @@ func main() {
 		}
 
 		// App log
-		logging.AppLogger.Printf("/metrics endpointine istek geldi. IP: %s", c.IP())
+		logging.LogApp(logging.INFO, "/metrics endpointine istek geldi. IP: %s", c.IP())
 
 		// Audit log
 		logging.LogAudit(
@@ -63,8 +63,8 @@ func main() {
 		return adaptor.HTTPHandler(promhttp.Handler())(c)
 	})
 
-	logging.AppLogger.Println("Uygulama başlatıldı")
+	logging.LogApp(logging.INFO, "Uygulama başlatıldı")
 	if err := app.Listen(":8080"); err != nil {
-		logging.AppLogger.Fatalf("Sunucu başlatılamadı: %v", err)
+		logging.LogApp(logging.ERROR, "Sunucu başlatılamadı: %v", err)
 	}
 }
