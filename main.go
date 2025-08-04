@@ -2,11 +2,13 @@ package main
 
 import (
 	"math/rand/v2"
+	"net/http"
 
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"main.go/logging"
 )
 
 var (
@@ -44,8 +46,25 @@ func main() {
 			solarPanelGauge.WithLabelValues(panelID).Set(value)
 		}
 
+		// App log
+		logging.AppLogger.Printf("/metrics endpointine istek geldi. IP: %s", c.IP())
+
+		// Audit log
+		logging.LogAudit(
+			"anonymous",                   // user (kimlik doğrulama yoksa "anonymous")
+			"/metrics",                    // endpoint
+			c.Method(),                    // method
+			http.StatusOK,                 // status code
+			c.IP(),                        // client ip
+			nil,                           // params
+			"Panel metrikleri listelendi", // message
+		)
+
 		return adaptor.HTTPHandler(promhttp.Handler())(c)
 	})
 
-	app.Listen(":8080")
+	logging.AppLogger.Println("Uygulama başlatıldı")
+	if err := app.Listen(":8080"); err != nil {
+		logging.AppLogger.Fatalf("Sunucu başlatılamadı: %v", err)
+	}
 }
