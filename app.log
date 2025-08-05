@@ -194,3 +194,63 @@ APP: 2025/08/05 10:45:44 logging.go:84: [INFO] /metrics endpointine istek geldi.
 APP: 2025/08/05 10:45:45 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
 APP: 2025/08/05 10:45:46 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
 APP: 2025/08/05 10:47:18 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:34 logging.go:84: [INFO] Uygulama başlatıldı
+APP: 2025/08/05 10:48:36 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:37 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:37 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:38 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:39 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:40 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:40 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:41 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:42 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:43 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:44 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:45 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:48:54 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:49:02 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:49:02 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:56:26 logging.go:84: [INFO] Uygulama başlatıldı
+APP: 2025/08/05 10:56:29 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:56:30 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:56:31 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:56:32 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:56:32 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:56:33 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:56:33 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:15 logging.go:84: [INFO] Uygulama başlatıldı
+APP: 2025/08/05 10:59:17 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:17 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:18 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:18 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:18 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:19 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:19 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:20 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:20 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 10:59:20 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:00:37 logging.go:84: [INFO] Uygulama başlatıldı
+APP: 2025/08/05 11:00:56 logging.go:84: [INFO] Uygulama başlatıldı
+APP: 2025/08/05 11:00:57 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:01:34 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:01:35 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:01:35 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:02:35 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:02:36 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:02:57 logging.go:84: [INFO] Uygulama başlatıldı
+APP: 2025/08/05 11:04:09 logging.go:84: [INFO] Uygulama başlatıldı
+APP: 2025/08/05 11:04:11 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:04:12 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:04:12 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:04:13 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:05:07 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:05:08 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:05:55 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:05:55 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 11:05:56 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 13:14:05 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 13:14:06 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 13:14:07 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 13:14:22 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 13:14:26 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/05 13:14:26 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1

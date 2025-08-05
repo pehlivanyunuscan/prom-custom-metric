@@ -18,15 +18,6 @@ var (
 			Name: "mppt_values",
 			Help: "MPPT sensor values",
 		},
-		[]string{"sensor"},
-	)
-
-	// Sensör + role için Gauge
-	mpptRoleGauge = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "mppt_role_values",
-			Help: "MPPT role values",
-		},
 		[]string{"sensor", "role"},
 	)
 
@@ -91,7 +82,6 @@ func randomValue(sensor string) float64 {
 func init() {
 	// Metricleri register et
 	prometheus.MustRegister(mpptGauge)
-	prometheus.MustRegister(mpptRoleGauge)
 	prometheus.MustRegister(metricsCounter)
 }
 
@@ -101,18 +91,16 @@ func main() {
 	app.Get("/metrics", func(c *fiber.Ctx) error {
 		metricsCounter.Inc()
 
+		// Tüm sensörler için (role boş)
 		for _, sensor := range sensorLabels {
-			if sensor != "role durumlari" {
-				value := randomValue(sensor)
-				mpptGauge.WithLabelValues(sensor).Set(value)
+			value := randomValue(sensor)
+			mpptGauge.WithLabelValues(sensor, "").Set(value)
+		}
 
-			} else {
-				// "role durumlari" için her role için ayrı değerler set ediliyor
-				for _, role := range roleLabels {
-					value := randomValue("role durumlari")
-					mpptRoleGauge.WithLabelValues("role durumlari", role).Set(value)
-				}
-			}
+		// Tüm role'ler için (sensor="role durumlari", role=rol ismi)
+		for _, role := range roleLabels {
+			value := randomValue("role durumlari")
+			mpptGauge.WithLabelValues("role durumlari", role).Set(value)
 		}
 
 		// App log
