@@ -41,7 +41,6 @@ var (
 
 	once         sync.Once
 	sensorGauges map[string]*metrics.Gauge
-	roleGauges   map[string]map[string]*metrics.Gauge
 	// Pattern için global değişkenler
 	startMinute      = 0      // 00:00
 	endMinute        = 1440   // 24*60 = 1440
@@ -51,18 +50,17 @@ var (
 
 func initGauges() {
 	sensorGauges = make(map[string]*metrics.Gauge)
+	// Normal sensörler
 	for _, sensor := range sensorLabels {
-		g := metrics.GetOrCreateGauge(fmt.Sprintf(`mppt_values{sensor="%s"}`, sensor), nil)
-		sensorGauges[sensor] = g
+		key := fmt.Sprintf(`mppt_values{sensor="%s"}`, sensor)
+		g := metrics.GetOrCreateGauge(key, nil)
+		sensorGauges[key] = g
 	}
-
-	roleGauges = make(map[string]map[string]*metrics.Gauge)
-	roleGauges["role durumlari"] = make(map[string]*metrics.Gauge)
+	// Role durumları, sensör olarak "role durumlari" ve ek olarak "role" etiketi
 	for _, role := range roleLabels {
-		// sensor="role durumlari", role="role x"
-		key := role
-		g := metrics.GetOrCreateGauge(fmt.Sprintf(`mppt_values{sensor="role durumlari",role="%s"}`, key), nil)
-		roleGauges["role durumlari"][key] = g
+		key := fmt.Sprintf(`mppt_values{sensor="role durumlari",role="%s"}`, role)
+		g := metrics.GetOrCreateGauge(key, nil)
+		sensorGauges[key] = g
 	}
 }
 
@@ -90,6 +88,9 @@ func randomValue(sensor string) float64 {
 }
 
 func main() {
+	// Logging seviyesini başlat
+	logging.SetLogLevel()
+
 	panelGucuPattern = GenerateDailyPattern(startMinute, endMinute, maxPanelGucu)
 
 	app := fiber.New()
@@ -104,14 +105,16 @@ func main() {
 			} else {
 				val = randomValue(sensor)
 			}
-			if g, ok := sensorGauges[sensor]; ok {
+			key := fmt.Sprintf(`mppt_values{sensor="%s"}`, sensor)
+			if g, ok := sensorGauges[key]; ok {
 				g.Set(val)
 			}
 		}
 		// Role’ler için değer güncelle
 		for _, role := range roleLabels {
 			val := randomValue("role durumlari")
-			if g, ok := roleGauges["role durumlari"][role]; ok {
+			key := fmt.Sprintf(`mppt_values{sensor="role durumlari",role="%s"}`, role)
+			if g, ok := sensorGauges[key]; ok {
 				g.Set(val)
 			}
 		}
