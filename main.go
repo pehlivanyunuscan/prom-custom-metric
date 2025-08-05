@@ -1,65 +1,67 @@
 package main
 
 import (
+	"fmt"
 	"math/rand/v2"
 	"net/http"
+	"sync"
 
-	"github.com/gofiber/adaptor/v2"
+	"github.com/VictoriaMetrics/metrics"
 	"github.com/gofiber/fiber/v2"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"main.go/logging"
 )
 
 var (
-	// Sadece sensör değerlerini tutan Gauge
-	mpptGauge = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "mppt_values",
-			Help: "MPPT sensor values",
-		},
-		[]string{"sensor", "role"},
-	)
+	sensorLabels = []string{
+		"aku gerilimi",
+		"panel gerilimi",
+		"sarj akimi",
+		"yuk akimi",
+		"sicaklik",
+		"soc",
+		"yuk gucu",
+		"panel gucu",
+		"yuk durum",
+		"aku tipi",
+		"sarj durum",
+		"kapi bilgisi",
+		"sarj gucu",
+		"panel akimi",
+	}
 
-	// Counter: /metrics endpointine yapılan istek sayısı
-	metricsCounter = prometheus.NewCounter(
-		prometheus.CounterOpts{
-			Name: "metrics_endpoint_requests_total",
-			Help: "Total number of requests to the metrics endpoint",
-		},
-	)
+	roleLabels = []string{
+		"role 1",
+		"role 2",
+		"role 3",
+		"role 4",
+		"role 5",
+		"role 6",
+		"role 7",
+	}
+
+	once         sync.Once
+	sensorGauges map[string]*metrics.Gauge
+	roleGauges   map[string]map[string]*metrics.Gauge
 )
 
-var sensorLabels = []string{
-	"aku gerilimi",
-	"panel gerilimi",
-	"sarj akimi",
-	"yuk akimi",
-	"sicaklik",
-	"soc",
-	"yuk gucu",
-	"panel gucu",
-	"yuk durum",
-	"aku tipi",
-	"sarj durum",
-	"kapi bilgisi",
-	"sarj gucu",
-	"panel akimi",
-	"role durumlari",
-}
+func initGauges() {
+	sensorGauges = make(map[string]*metrics.Gauge)
+	for _, sensor := range sensorLabels {
+		g := metrics.GetOrCreateGauge(fmt.Sprintf(`mppt_values{sensor="%s"}`, sensor), nil)
+		sensorGauges[sensor] = g
+	}
 
-var roleLabels = []string{
-	"role 1",
-	"role 2",
-	"role 3",
-	"role 4",
-	"role 5",
-	"role 6",
-	"role 7",
+	roleGauges = make(map[string]map[string]*metrics.Gauge)
+	roleGauges["role durumlari"] = make(map[string]*metrics.Gauge)
+	for _, role := range roleLabels {
+		// sensor="role durumlari", role="role x"
+		key := role
+		g := metrics.GetOrCreateGauge(fmt.Sprintf(`mppt_values{sensor="role durumlari",role="%s"}`, key), nil)
+		roleGauges["role durumlari"][key] = g
+	}
 }
 
 func randomValue(sensor string) float64 {
-	// Her sensör için rastgele bir değer döndür
 	switch sensor {
 	case "aku gerilimi", "panel gerilimi":
 		return float64(rand.IntN(1500) + 1200)
@@ -71,56 +73,55 @@ func randomValue(sensor string) float64 {
 		return float64(rand.IntN(101))
 	case "yuk gucu", "panel gucu", "sarj gucu":
 		return float64(rand.IntN(4000) + 1000)
-	case "yuk durum", "aku tipi", "sarj durum", "role durumlari":
+	case "yuk durum", "aku tipi", "sarj durum":
 		return float64(rand.IntN(2)) // 0 veya 1
 	case "kapi bilgisi":
 		return float64(rand.IntN(3)) // 0, 1 veya 2
+	case "role durumlari":
+		return float64(rand.IntN(2)) // 0 veya 1
 	default:
-		return 0.0 // Bilinmeyen sensör
+		return 0.0
 	}
-}
-func init() {
-	// Metricleri register et
-	prometheus.MustRegister(mpptGauge)
-	prometheus.MustRegister(metricsCounter)
 }
 
 func main() {
 	app := fiber.New()
 
-	app.Get("/metrics", func(c *fiber.Ctx) error {
-		metricsCounter.Inc()
+	once.Do(initGauges)
 
-		// Tüm sensörler için (role boş)
+	app.Get("/metrics", func(c *fiber.Ctx) error {
+		// Sensorlar için değer güncelle
 		for _, sensor := range sensorLabels {
 			if sensor == "role durumlari" {
 				continue // Role durumları için ayrı işlem yapacağız
 			}
-			value := randomValue(sensor)
-			mpptGauge.WithLabelValues(sensor, "").Set(value)
+			val := randomValue(sensor)
+			if g, ok := sensorGauges[sensor]; ok {
+				g.Set(val)
+			}
 		}
-
-		// Tüm role'ler için (sensor="role durumlari", role=rol ismi)
+		// Role’ler için değer güncelle
 		for _, role := range roleLabels {
-			value := randomValue("role durumlari")
-			mpptGauge.WithLabelValues("role durumlari", role).Set(value)
+			val := randomValue("role durumlari")
+			if g, ok := roleGauges["role durumlari"][role]; ok {
+				g.Set(val)
+			}
 		}
 
-		// App log
 		logging.LogApp(logging.INFO, "/metrics endpointine istek geldi. IP: %s", c.IP())
-
-		// Audit log
 		logging.LogAudit(
-			"anonymous",                   // user (kimlik doğrulama yoksa "anonymous")
-			"/metrics",                    // endpoint
-			c.Method(),                    // method
-			http.StatusOK,                 // status code
-			c.IP(),                        // client ip
-			nil,                           // params
-			"Panel metrikleri listelendi", // message
+			"anonymous",
+			"/metrics",
+			c.Method(),
+			http.StatusOK,
+			c.IP(),
+			nil,
+			"Panel metrikleri listelendi",
 		)
 
-		return adaptor.HTTPHandler(promhttp.Handler())(c)
+		c.Set("Content-Type", "text/plain; version=0.0.4")
+		metrics.WritePrometheus(c.Context(), true)
+		return nil
 	})
 
 	logging.LogApp(logging.INFO, "Uygulama başlatıldı")
