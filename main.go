@@ -12,14 +12,24 @@ import (
 )
 
 var (
-	// Gauge: güneş paneli çıkış gücü (panel_id ile label)
-	solarPanelGauge = prometheus.NewGaugeVec(
+	// Sadece sensör değerlerini tutan Gauge
+	mpptGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "solar_panel_output_watts",
-			Help: "Solar panel power output (random example)",
+			Name: "mppt_values",
+			Help: "MPPT sensor values",
 		},
-		[]string{"panel_id"},
+		[]string{"sensor"},
 	)
+
+	// Sensör + role için Gauge
+	mpptRoleGauge = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "mppt_role_values",
+			Help: "MPPT role values",
+		},
+		[]string{"sensor", "role"},
+	)
+
 	// Counter: /metrics endpointine yapılan istek sayısı
 	metricsCounter = prometheus.NewCounter(
 		prometheus.CounterOpts{
@@ -31,7 +41,8 @@ var (
 
 func init() {
 	// Metricleri register et
-	prometheus.MustRegister(solarPanelGauge)
+	prometheus.MustRegister(mpptGauge)
+	prometheus.MustRegister(mpptRoleGauge)
 	prometheus.MustRegister(metricsCounter)
 }
 
