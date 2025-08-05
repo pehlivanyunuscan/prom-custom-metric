@@ -54,6 +54,7 @@ var sensorLabels = []string{
 	"kapi bilgisi",
 	"sarj gucu",
 	"panel akimi",
+	"role durumlari",
 }
 
 var roleLabels = []string{
@@ -69,22 +70,22 @@ var roleLabels = []string{
 func randomValue(sensor string) float64 {
 	// Her sensör için rastgele bir değer döndür
 	switch sensor {
-		case "aku gerilimi", "panel gerilimi":
-			return float64(rand.IntN(1500)+1200)
-		case "sarj akimi", "yuk akimi", "panel akimi":
-			return float64(rand.IntN(3000)+500)
-		case "sicaklik":
-			return float64(rand.IntN(100))
-		case "soc":
-			return float64(rand.IntN(101))
-		case "yuk gucu", "panel gucu", "sarj gucu":
-			return float64(rand.IntN(4000)+1000)
-		case "yuk durum", "aku tipi", "sarj durum",:
-			return float64(rand.IntN(2)) // 0 veya 1
-		case "kapi bilgisi":
-			return float64(rand.IntN(3)) // 0, 1 veya 2
-		default:
-			return 0.0 // Bilinmeyen sensör
+	case "aku gerilimi", "panel gerilimi":
+		return float64(rand.IntN(1500) + 1200)
+	case "sarj akimi", "yuk akimi", "panel akimi":
+		return float64(rand.IntN(3000) + 500)
+	case "sicaklik":
+		return float64(rand.IntN(100))
+	case "soc":
+		return float64(rand.IntN(101))
+	case "yuk gucu", "panel gucu", "sarj gucu":
+		return float64(rand.IntN(4000) + 1000)
+	case "yuk durum", "aku tipi", "sarj durum", "role durumlari":
+		return float64(rand.IntN(2)) // 0 veya 1
+	case "kapi bilgisi":
+		return float64(rand.IntN(3)) // 0, 1 veya 2
+	default:
+		return 0.0 // Bilinmeyen sensör
 	}
 }
 func init() {
@@ -100,9 +101,18 @@ func main() {
 	app.Get("/metrics", func(c *fiber.Ctx) error {
 		metricsCounter.Inc()
 
-		for _, panelID := range []string{"A", "B", "C", "D", "E", "F"} {
-			value := 100 + rand.Float64()*400 // Örnek değer
-			solarPanelGauge.WithLabelValues(panelID).Set(value)
+		for _, sensor := range sensorLabels {
+			if sensor != "role durumlari" {
+				value := randomValue(sensor)
+				mpptGauge.WithLabelValues(sensor).Set(value)
+
+			} else {
+				// "role durumlari" için her role için ayrı değerler set ediliyor
+				for _, role := range roleLabels {
+					value := randomValue("role durumlari")
+					mpptRoleGauge.WithLabelValues("role durumlari", role).Set(value)
+				}
+			}
 		}
 
 		// App log
