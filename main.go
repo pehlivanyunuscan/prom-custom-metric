@@ -93,6 +93,9 @@ func main() {
 
 		// Tüm sensörler için (role boş)
 		for _, sensor := range sensorLabels {
+			if sensor == "role durumlari" {
+				continue // Role durumları için ayrı işlem yapacağız
+			}
 			value := randomValue(sensor)
 			mpptGauge.WithLabelValues(sensor, "").Set(value)
 		}
