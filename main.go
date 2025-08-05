@@ -42,6 +42,11 @@ var (
 	once         sync.Once
 	sensorGauges map[string]*metrics.Gauge
 	roleGauges   map[string]map[string]*metrics.Gauge
+	// Pattern için global değişkenler
+	startMinute      = 0      // 00:00
+	endMinute        = 1440   // 24*60 = 1440
+	maxPanelGucu     = 1000.0 // örnek için
+	panelGucuPattern []float64
 )
 
 func initGauges() {
@@ -85,17 +90,20 @@ func randomValue(sensor string) float64 {
 }
 
 func main() {
-	app := fiber.New()
+	panelGucuPattern = GenerateDailyPattern(startMinute, endMinute, maxPanelGucu)
 
+	app := fiber.New()
 	once.Do(initGauges)
 
 	app.Get("/metrics", func(c *fiber.Ctx) error {
 		// Sensorlar için değer güncelle
 		for _, sensor := range sensorLabels {
-			if sensor == "role durumlari" {
-				continue // Role durumları için ayrı işlem yapacağız
+			var val float64
+			if sensor == "panel gucu" {
+				val = getPatternValueForNow(panelGucuPattern, startMinute, endMinute)
+			} else {
+				val = randomValue(sensor)
 			}
-			val := randomValue(sensor)
 			if g, ok := sensorGauges[sensor]; ok {
 				g.Set(val)
 			}
