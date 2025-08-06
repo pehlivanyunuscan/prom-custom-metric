@@ -1,37 +1,47 @@
 package patterngen
 
 import (
-	"math"
 	"math/rand/v2"
 	"time"
 )
 
+// Günlük bir desen oluşturur
+// startMinute: Desenin başlangıç dakikası (0-1439 arası)
+// endMinute: Desenin bitiş dakikası (0-1439 arası, startMinute'dan büyük olmalı)
 func GenerateDailyPattern(startMinute, endMinute int, maxValue float64) []float64 {
-	totalMinutes := endMinute - startMinute
-	result := make([]float64, totalMinutes)
+	pattern := make([]float64, endMinute-startMinute)
+	for minute := startMinute; minute < endMinute; minute++ {
+		hour := float64(minute) / 60.0
+		var value float64
 
-	for i := 0; i < totalMinutes; i++ {
-		minuteOfDay := startMinute + i
-		sinVal := math.Sin(math.Pi * float64(minuteOfDay-startMinute) / float64(endMinute-startMinute))
-		value := maxValue * sinVal
-
-		var noise float64
-		// Öğlen (11:00 - 15:00) arası daha yüksek gürültü
-		if minuteOfDay >= 660 && minuteOfDay <= 900 {
-			noise = rand.NormFloat64() * maxValue * 0.09
-		} else {
-			noise = rand.NormFloat64() * maxValue * 0.02
+		switch {
+		case hour < 6.0: // Gece
+			value = 0
+		case hour < 8.0: // Güneş doğuşu (yavaş artış)
+			value = maxValue * 0.2 * (hour - 6.0) / 2.0
+		case hour < 11.0: // Sabah hızlı artış
+			value = maxValue * (0.2 + 0.8*(hour-8.0)/3.0)
+		case hour < 15.0: // Öğlen (peak, noise ile)
+			base := maxValue
+			noise := rand.NormFloat64() * maxValue * 0.2 // %20 oynaklık
+			value = base + noise
+		case hour < 18.0: // Akşam yavaş azalış
+			value = maxValue * (1.0 - (hour-15.0)/3.0)
+		default: // Gece
+			value = 0
 		}
-		value += noise
 
 		if value < 0 {
 			value = 0
 		}
-		result[i] = value
+		pattern[minute-startMinute] = value
 	}
-	return result
+	return pattern
 }
 
+// Şu anki günün dakikasını döner (0-1439 arası)
+// 0 = 00:00, 1439 = 23:59
+// Bu fonksiyon, günün saatini ve dakikasını kullanarak toplam dakikayı hesaplar.
 func GetCurrentMinuteOfDay() int {
 	now := time.Now()
 	return now.Hour()*60 + now.Minute()
