@@ -9,6 +9,7 @@ import (
 	"github.com/VictoriaMetrics/metrics"
 	"github.com/gofiber/fiber/v2"
 	"main.go/logging"
+	"main.go/patterngen"
 )
 
 var (
@@ -91,7 +92,7 @@ func main() {
 	// Logging seviyesini başlat
 	logging.SetLogLevel()
 
-	panelGucuPattern = GenerateDailyPattern(startMinute, endMinute, maxPanelGucu)
+	panelGucuPattern = patterngen.GenerateDailyPattern(startMinute, endMinute, maxPanelGucu)
 
 	app := fiber.New()
 	once.Do(initGauges)
@@ -101,7 +102,7 @@ func main() {
 		for _, sensor := range sensorLabels {
 			var val float64
 			if sensor == "panel gucu" {
-				val = getPatternValueForNow(panelGucuPattern, startMinute, endMinute)
+				val = patterngen.GetPatternValueForNow(panelGucuPattern, startMinute, endMinute)
 			} else {
 				val = randomValue(sensor)
 			}

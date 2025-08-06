@@ -1,4 +1,4 @@
-package main
+package patterngen
 
 import (
 	"math"
@@ -32,13 +32,13 @@ func GenerateDailyPattern(startMinute, endMinute int, maxValue float64) []float6
 	return result
 }
 
-func getCurrentMinuteOfDay() int {
+func GetCurrentMinuteOfDay() int {
 	now := time.Now()
 	return now.Hour()*60 + now.Minute()
 }
 
-func getPatternValueForNow(pattern []float64, startMinute, endMinute int) float64 {
-	minuteOfDay := getCurrentMinuteOfDay()
+func GetPatternValueForNow(pattern []float64, startMinute, endMinute int) float64 {
+	minuteOfDay := GetCurrentMinuteOfDay()
 	if minuteOfDay < startMinute || minuteOfDay >= endMinute {
 		return 0
 	}

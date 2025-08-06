@@ -277,3 +277,14 @@ APP: 2025/08/05 20:33:42 logging.go:84: [ERROR] Sunucu başlatılamadı: failed 
 APP: 2025/08/05 20:34:31 logging.go:84: [INFO] Uygulama başlatıldı
 APP: 2025/08/05 20:34:31 logging.go:84: [ERROR] Sunucu başlatılamadı: failed to listen: listen tcp4 :8080: bind: address already in use
 APP: 2025/08/05 20:34:38 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:10:21 logging.go:84: [INFO] Uygulama başlatıldı
+APP: 2025/08/06 08:10:31 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:10:32 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:10:33 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:10:33 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:10:33 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:10:34 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:10:37 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:11:30 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:11:31 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:11:31 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
