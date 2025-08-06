@@ -5,6 +5,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/VictoriaMetrics/metrics"
 	"github.com/gofiber/fiber/v2"
@@ -47,7 +48,19 @@ var (
 	endMinute        = 1440   // 24*60 = 1440
 	maxPanelGucu     = 1000.0 // örnek için
 	panelGucuPattern []float64
+	lastPatternDay   int //Son gün değiştiğinde yeni pattern oluşturmak için kullanılır
 )
+
+// updatePanelPatternIfNeeded güncel panel gücü desenini günceller
+// Eğer gün değiştiyse yeni bir desen oluşturur.
+func updatePanelPatternIfNeeded() {
+	now := time.Now()
+	day := now.YearDay()
+	if day != lastPatternDay {
+		panelGucuPattern = patterngen.GenerateDailyPattern(startMinute, endMinute, maxPanelGucu)
+		lastPatternDay = day
+	}
+}
 
 func initGauges() {
 	sensorGauges = make(map[string]*metrics.Gauge)
@@ -94,10 +107,13 @@ func main() {
 
 	panelGucuPattern = patterngen.GenerateDailyPattern(startMinute, endMinute, maxPanelGucu)
 
+	lastPatternDay = time.Now().YearDay() // İlk desen oluşturma için güncel günü al
+
 	app := fiber.New()
 	once.Do(initGauges)
 
 	app.Get("/metrics", func(c *fiber.Ctx) error {
+		updatePanelPatternIfNeeded() // Panel gücü desenini güncelle
 		// Sensorlar için değer güncelle
 		for _, sensor := range sensorLabels {
 			var val float64
