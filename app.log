@@ -420,3 +420,11 @@ APP: 2025/08/06 08:47:14 logging.go:84: [INFO] /metrics endpointine istek geldi.
 APP: 2025/08/06 08:47:29 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
 APP: 2025/08/06 08:47:44 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
 APP: 2025/08/06 08:47:59 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:48:14 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:48:29 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:48:44 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:48:59 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:49:14 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:49:29 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:49:44 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
+APP: 2025/08/06 08:49:59 logging.go:84: [INFO] /metrics endpointine istek geldi. IP: 127.0.0.1
