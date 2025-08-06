@@ -1,7 +1,7 @@
 package patterngen
 
 import (
-	"math/rand/v2"
+	"math/rand"
 	"time"
 )
 
@@ -9,25 +9,40 @@ import (
 // startMinute: Desenin başlangıç dakikası (0-1439 arası)
 // endMinute: Desenin bitiş dakikası (0-1439 arası, startMinute'dan büyük olmalı)
 func GenerateDailyPattern(startMinute, endMinute int, maxValue float64) []float64 {
+	// Günlük rastgele parametreler
+	rand.Seed(time.Now().UnixNano())
+	peakNoise := 1 + (rand.NormFloat64() * 0.07) // %7 civarı tepe oynaklığı
+	morningSlope := 0.18 + rand.Float64()*0.04   // sabah artış eğimi (0.18-0.22)
+	peakHour := 12.0 + rand.NormFloat64()*0.5    // tepe saati 12 civarı oynar
+
 	pattern := make([]float64, endMinute-startMinute)
 	for minute := startMinute; minute < endMinute; minute++ {
 		hour := float64(minute) / 60.0
 		var value float64
 
 		switch {
-		case hour < 6.0: // Gece
+		case hour < 6.0:
 			value = 0
-		case hour < 8.0: // Güneş doğuşu (yavaş artış)
-			value = maxValue * 0.2 * (hour - 6.0) / 2.0
-		case hour < 11.0: // Sabah hızlı artış
-			value = maxValue * (0.2 + 0.8*(hour-8.0)/3.0)
+		case hour < 8.0: // Sabah yavaş artış (random slope)
+			value = maxValue * morningSlope * (hour - 6.0) / 2.0 * peakNoise
+		case hour < peakHour: // Sabah hızlı artış (random slope)
+			value = maxValue * (morningSlope + (1-morningSlope)*(hour-8.0)/(peakHour-8.0)) * peakNoise
 		case hour < 15.0: // Öğlen (peak, noise ile)
-			base := maxValue
-			noise := rand.NormFloat64() * maxValue * 0.2 // %20 oynaklık
+			base := maxValue * peakNoise
+			noise := rand.NormFloat64() * maxValue * 0.15 // %15 oynaklık
 			value = base + noise
-		case hour < 18.0: // Akşam yavaş azalış
-			value = maxValue * (1.0 - (hour-15.0)/3.0)
-		default: // Gece
+		case hour < 18.0: // Akşam yavaş azalış (random slope)
+			// 15:00'da mevcut değerden başla, 18:00'da 0'a in
+			fraction := (hour - 15.0) / 3.0 // 15:00'da 0, 18:00'da 1
+			// Düşüş eğrisini belirle (başlangıç değeri: peak, bitiş: 0)
+			base := maxValue * peakNoise * (1.0 - fraction)
+			// Noise ekle ama sadece negatif (azaltıcı) olacak şekilde
+			noise := -1 * (rand.Float64() * base * 0.08) // %8'e kadar negatif oynaklık
+			value = base + noise
+			if value < 0 {
+				value = 0
+			}
+		default:
 			value = 0
 		}
 
