@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math/rand/v2"
-	"net/http"
 	"sync"
 	"time"
 
@@ -48,7 +47,8 @@ var (
 	endMinute        = 1440   // 24*60 = 1440
 	maxPanelGucu     = 1000.0 // örnek için
 	panelGucuPattern []float64
-	lastPatternDay   int //Son gün değiştiğinde yeni pattern oluşturmak için kullanılır
+	lastPatternDay   int            //Son gün değiştiğinde yeni pattern oluşturmak için kullanılır
+	timeGauge        *metrics.Gauge // time_active{time="11_14"} gibi bir etiketle
 )
 
 // updatePanelPatternIfNeeded güncel panel gücü desenini günceller
@@ -76,6 +76,8 @@ func initGauges() {
 		g := metrics.GetOrCreateGauge(key, nil)
 		sensorGauges[key] = g
 	}
+
+	timeGauge = metrics.GetOrCreateGauge(`time_active{time="11_14"}`, nil) // 11 le 14 arasındaki zaman dilimi için gauge oluşturulur
 }
 
 func randomValue(sensor string) float64 {
@@ -136,8 +138,10 @@ func main() {
 			}
 		}
 
-		logging.LogApp(logging.INFO, "/metrics endpointine istek geldi. IP: %s", c.IP())
-		logging.LogAudit(
+		setTimeMetric() // Saat aralığına göre time_active değerini ayarla
+
+		// logging.LogApp(logging.INFO, "/metrics endpointine istek geldi. IP: %s", c.IP())
+		/* logging.LogAudit(
 			"anonymous",
 			"/metrics",
 			c.Method(),
@@ -145,7 +149,7 @@ func main() {
 			c.IP(),
 			nil,
 			"Panel metrikleri listelendi",
-		)
+		) */
 
 		c.Set("Content-Type", "text/plain; version=0.0.4")
 		metrics.WritePrometheus(c.Context(), true)
@@ -155,5 +159,17 @@ func main() {
 	logging.LogApp(logging.INFO, "Uygulama başlatıldı")
 	if err := app.Listen(":8080"); err != nil {
 		logging.LogApp(logging.ERROR, "Sunucu başlatılamadı: %v", err)
+	}
+}
+
+func setTimeMetric() {
+	now := time.Now()
+	hour := now.Hour()
+
+	// Saat ve dakika değerlerini 11-14 aralığına göre ayarla
+	if hour >= 11 && hour < 16 {
+		timeGauge.Set(1) // Aktif
+	} else {
+		timeGauge.Set(0) // Pasif
 	}
 }
