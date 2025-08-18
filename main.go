@@ -77,7 +77,7 @@ func initGauges() {
 		sensorGauges[key] = g
 	}
 
-	timeGauge = metrics.GetOrCreateGauge(`time_active{time="11_14"}`, nil) // 11 le 14 arasındaki zaman dilimi için gauge oluşturulur
+	timeGauge = metrics.GetOrCreateGauge(`time_active{time="11_15"}`, nil) // 11 le 15 arasındaki zaman dilimi için gauge oluşturulur
 }
 
 func randomValue(sensor string) float64 {
@@ -162,12 +162,15 @@ func main() {
 	}
 }
 
+// setTimeMetric, günün saatine göre time_active değerini ayarlar
+// 11:00 - 15:00 saatleri arasında aktif, diğer zamanlarda pasif olarak ayarlanır.
+// Bu fonksiyon, her istek geldiğinde çağrılır.
 func setTimeMetric() {
 	now := time.Now()
 	hour := now.Hour()
 
-	// Saat ve dakika değerlerini 11-14 aralığına göre ayarla
-	if hour >= 11 && hour < 16 {
+	// Saat ve dakika değerlerini 11-15 aralığına göre ayarla
+	if hour >= 11 && hour < 15 {
 		timeGauge.Set(1) // Aktif
 	} else {
 		timeGauge.Set(0) // Pasif
