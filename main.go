@@ -27,7 +27,7 @@ var panelList = []Panel{
 	{Location: "Istanbul", Brand: "DEF", MaxPower: 1400, lastPatternDay: -1},
 	{Location: "Izmir", Brand: "GHI", MaxPower: 1600, lastPatternDay: -1},
 	{Location: "Bursa", Brand: "JKL", MaxPower: 1500, lastPatternDay: -1},
-	{Location: "Adana", Brand: "MNO", MaxPower: 1000, lastPatternDay: -1},
+	{Location: "Adana", Brand: "MNO", MaxPower: 1350, lastPatternDay: -1},
 }
 
 var (
@@ -61,11 +61,11 @@ var (
 	once         sync.Once
 	sensorGauges map[string]*metrics.Gauge
 	// Pattern için global değişkenler
-	startMinute      = 0      // 00:00
-	endMinute        = 1440   // 24*60 = 1440
-	maxPanelGucu     = 1000.0 // örnek için
-	panelGucuPattern []float64
-	timeGauge        *metrics.Gauge // time_active{time="11_14"} gibi bir etiketle
+	startMinute = 0    // 00:00
+	endMinute   = 1440 // 24*60 = 1440
+	// maxPanelGucu     = 1000.0 // örnek için
+	// panelGucuPattern []float64
+	timeGauge *metrics.Gauge // time_active{time="11_14"} gibi bir etiketle
 )
 
 // updatePanelPatternIfNeeded güncel panel gücü desenini günceller
@@ -137,8 +137,6 @@ func main() {
 	// Logging seviyesini başlat
 	logging.SetLogLevel()
 
-	panelGucuPattern = patterngen.GenerateDailyPattern(startMinute, endMinute, maxPanelGucu, time.Now().UnixNano())
-
 	app := fiber.New()
 	once.Do(initGauges)
 
@@ -149,7 +147,7 @@ func main() {
 			var val float64
 			if sensor == "panel gucu" {
 				for _, panel := range panelList {
-					val = patterngen.GetPatternValueForNow(panelGucuPattern, startMinute, endMinute)
+					val = patterngen.GetPatternValueForNow(panel.Pattern, startMinute, endMinute)
 					// Her panel için ayrı metric
 					key := fmt.Sprintf(`mppt_values{sensor="%s",location="%s",brand="%s"}`, sensor, panel.Location, panel.Brand)
 					if g, ok := sensorGauges[key]; ok {
