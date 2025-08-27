@@ -8,12 +8,12 @@ import (
 // Günlük bir desen oluşturur
 // startMinute: Desenin başlangıç dakikası (0-1439 arası)
 // endMinute: Desenin bitiş dakikası (0-1439 arası, startMinute'dan büyük olmalı)
-func GenerateDailyPattern(startMinute, endMinute int, maxValue float64) []float64 {
+func GenerateDailyPattern(startMinute, endMinute int, maxValue float64, seed int64) []float64 {
 	// Günlük rastgele parametreler
-	rand.Seed(time.Now().UnixNano())
-	peakNoise := 1 + (rand.NormFloat64() * 0.07) // %7 civarı tepe oynaklığı
-	morningSlope := 0.18 + rand.Float64()*0.04   // sabah artış eğimi (0.18-0.22)
-	peakHour := 12.0 + rand.NormFloat64()*0.5    // tepe saati 12 civarı oynar
+	r := rand.New(rand.NewSource(seed))
+	peakNoise := 1 + (r.NormFloat64() * 0.07) // %7 civarı tepe oynaklığı
+	morningSlope := 0.18 + r.Float64()*0.04   // sabah artış eğimi (0.18-0.22)
+	peakHour := 12.0 + r.NormFloat64()*0.5    // tepe saati 12 civarı oynar
 
 	pattern := make([]float64, endMinute-startMinute)
 	for minute := startMinute; minute < endMinute; minute++ {

@@ -12,6 +12,24 @@ import (
 	"main.go/patterngen"
 )
 
+// Panel tanımı
+type Panel struct {
+	Location       string `json:"location"`
+	Brand          string `json:"brand"`
+	MaxPower       float64
+	Pattern        []float64
+	lastPatternDay int
+}
+
+// Panel listesi
+var panelList = []Panel{
+	{Location: "Ankara", Brand: "ABC", MaxPower: 1250, lastPatternDay: -1},
+	{Location: "Istanbul", Brand: "DEF", MaxPower: 1400, lastPatternDay: -1},
+	{Location: "Izmir", Brand: "GHI", MaxPower: 1600, lastPatternDay: -1},
+	{Location: "Bursa", Brand: "JKL", MaxPower: 1500, lastPatternDay: -1},
+	{Location: "Adana", Brand: "MNO", MaxPower: 1000, lastPatternDay: -1},
+}
+
 var (
 	sensorLabels = []string{
 		"aku gerilimi",
@@ -47,7 +65,6 @@ var (
 	endMinute        = 1440   // 24*60 = 1440
 	maxPanelGucu     = 1000.0 // örnek için
 	panelGucuPattern []float64
-	lastPatternDay   int            //Son gün değiştiğinde yeni pattern oluşturmak için kullanılır
 	timeGauge        *metrics.Gauge // time_active{time="11_14"} gibi bir etiketle
 )
 
@@ -56,9 +73,13 @@ var (
 func updatePanelPatternIfNeeded() {
 	now := time.Now()
 	day := now.YearDay()
-	if day != lastPatternDay {
-		panelGucuPattern = patterngen.GenerateDailyPattern(startMinute, endMinute, maxPanelGucu)
-		lastPatternDay = day
+	for i := range panelList {
+		if panelList[i].lastPatternDay != day {
+			// Her panel için farklı seed
+			seed := int64(day) + int64(i)*1000
+			panelList[i].Pattern = patterngen.GenerateDailyPattern(startMinute, endMinute, panelList[i].MaxPower, seed)
+			panelList[i].lastPatternDay = day
+		}
 	}
 }
 
@@ -66,9 +87,18 @@ func initGauges() {
 	sensorGauges = make(map[string]*metrics.Gauge)
 	// Normal sensörler
 	for _, sensor := range sensorLabels {
-		key := fmt.Sprintf(`mppt_values{sensor="%s"}`, sensor)
-		g := metrics.GetOrCreateGauge(key, nil)
-		sensorGauges[key] = g
+		if sensor == "panel gucu" {
+			// Her panel için ayrı metric
+			for _, panel := range panelList {
+				key := fmt.Sprintf(`mppt_values{sensor="%s",location="%s",brand="%s"}`, sensor, panel.Location, panel.Brand)
+				g := metrics.GetOrCreateGauge(key, nil)
+				sensorGauges[key] = g
+			}
+		} else {
+			key := fmt.Sprintf(`mppt_values{sensor="%s"}`, sensor)
+			g := metrics.GetOrCreateGauge(key, nil)
+			sensorGauges[key] = g
+		}
 	}
 	// Role durumları, sensör olarak "role durumlari" ve ek olarak "role" etiketi
 	for _, role := range roleLabels {
@@ -107,9 +137,7 @@ func main() {
 	// Logging seviyesini başlat
 	logging.SetLogLevel()
 
-	panelGucuPattern = patterngen.GenerateDailyPattern(startMinute, endMinute, maxPanelGucu)
-
-	lastPatternDay = time.Now().YearDay() // İlk desen oluşturma için güncel günü al
+	panelGucuPattern = patterngen.GenerateDailyPattern(startMinute, endMinute, maxPanelGucu, time.Now().UnixNano())
 
 	app := fiber.New()
 	once.Do(initGauges)
@@ -120,7 +148,14 @@ func main() {
 		for _, sensor := range sensorLabels {
 			var val float64
 			if sensor == "panel gucu" {
-				val = patterngen.GetPatternValueForNow(panelGucuPattern, startMinute, endMinute)
+				for _, panel := range panelList {
+					val = patterngen.GetPatternValueForNow(panelGucuPattern, startMinute, endMinute)
+					// Her panel için ayrı metric
+					key := fmt.Sprintf(`mppt_values{sensor="%s",location="%s",brand="%s"}`, sensor, panel.Location, panel.Brand)
+					if g, ok := sensorGauges[key]; ok {
+						g.Set(val)
+					}
+				}
 			} else {
 				val = randomValue(sensor)
 			}
@@ -170,7 +205,7 @@ func setTimeMetric() {
 	hour := now.Hour()
 
 	// Saat ve dakika değerlerini 11-15 aralığına göre ayarla
-	if hour >= 11 && hour < 15 {
+	if hour >= 8 && hour < 15 {
 		timeGauge.Set(1) // Aktif
 	} else {
 		timeGauge.Set(0) // Pasif
