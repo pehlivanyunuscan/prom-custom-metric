@@ -28,6 +28,14 @@ var panelList = []Panel{
 	{Location: "Izmir", Brand: "GHI", MaxPower: 1600, lastPatternDay: -1},
 	{Location: "Bursa", Brand: "JKL", MaxPower: 1500, lastPatternDay: -1},
 	{Location: "Adana", Brand: "MNO", MaxPower: 1350, lastPatternDay: -1},
+	{Location: "Antalya", Brand: "PQR", MaxPower: 1450, lastPatternDay: -1},
+	{Location: "Konya", Brand: "STU", MaxPower: 1550, lastPatternDay: -1},
+	{Location: "Trabzon", Brand: "VWX", MaxPower: 1300, lastPatternDay: -1},
+	{Location: "Bodrum", Brand: "XYZ", MaxPower: 1200, lastPatternDay: -1},
+	{Location: "Mugla", Brand: "ABC", MaxPower: 1100, lastPatternDay: -1},
+	{Location: "Duzce", Brand: "DEF", MaxPower: 1150, lastPatternDay: -1},
+	{Location: "Kocaeli", Brand: "GHI", MaxPower: 1250, lastPatternDay: -1},
+	{Location: "Sakarya", Brand: "JKL", MaxPower: 1350, lastPatternDay: -1},
 }
 
 var (
