@@ -178,7 +178,7 @@ func main() {
 	})
 
 	logging.LogApp(logging.INFO, "Uygulama başlatıldı")
-	if err := app.Listen(":8080"); err != nil {
+	if err := app.Listen("0.0.0.0:8080"); err != nil {
 		logging.LogApp(logging.ERROR, "Sunucu başlatılamadı: %v", err)
 	}
 }
